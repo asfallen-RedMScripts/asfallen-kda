@@ -20,11 +20,16 @@ end)
 
 
 RegisterNetEvent('vorp_core:Client:OnPlayerDeath')
-AddEventHandler('vorp_core:Client:OnPlayerDeath', function(killer)
+AddEventHandler('vorp_core:Client:OnPlayerDeath', function(killerserverid, causeofdeath)
     local playerId = GetPlayerServerId(PlayerId())
-    local killerId = killer and GetPlayerServerId(NetworkGetPlayerIndexFromPed(killer)) or 0
+    
 
-    TriggerServerEvent('asfallen_kda:playerDied', playerId, killerId)
+    if killerserverid and playerId ~= killerserverid then
+        TriggerServerEvent('asfallen_kda:playerDied', playerId, killerserverid)
+    else
+    
+        TriggerServerEvent('asfallen_kda:playerDied', playerId, 0)
+    end
 end)
 
 

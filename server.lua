@@ -84,58 +84,64 @@ end)
 
 RegisterServerEvent('asfallen_kda:playerDied')
 AddEventHandler('asfallen_kda:playerDied', function(victim, killer)
-    local steamId = GetSteamId(victim)
+    print("Server received - Victim: " .. tostring(victim) .. " Killer: " .. tostring(killer)) -- Debug için
     
-    if steamId then
-        if not PlayerStats[steamId] then
-            PlayerStats[steamId] = LoadPlayerStats(steamId)
+    local steamId = GetSteamId(victim)
+    if not steamId then
+        print("Steam ID bulunamadı - Victim: " .. tostring(victim)) -- Debug için
+        return
+    end
+    
+    if not PlayerStats[steamId] then
+        PlayerStats[steamId] = LoadPlayerStats(steamId)
+    end
+    
+    if PlayerStats[steamId] then
+        PlayerStats[steamId].deaths = PlayerStats[steamId].deaths + 1
+        
+      
+        if PlayerStats[steamId].deaths == 0 then
+            PlayerStats[steamId].kda = PlayerStats[steamId].kills
+        else
+            PlayerStats[steamId].kda = math.floor((PlayerStats[steamId].kills / PlayerStats[steamId].deaths) * 100) / 100
         end
         
-        if PlayerStats[steamId] then
-            PlayerStats[steamId].deaths = PlayerStats[steamId].deaths + 1
+    
+        exports.oxmysql:execute('UPDATE asfallen_kda SET deaths = ?, kda = ? WHERE steamid = ?',
+            {PlayerStats[steamId].deaths, PlayerStats[steamId].kda, steamId})
+                
+    
+        TriggerClientEvent('asfallen_kda:updateStats', victim, PlayerStats[steamId])
+    end
+    
+  
+    if killer and killer ~= 0 and killer ~= victim then
+        local killerSteamId = GetSteamId(killer)
+        if not killerSteamId then
+            print("Killer Steam ID bulunamadı - Killer: " .. tostring(killer)) -- Debug için
+            return
+        end
+        
+        if not PlayerStats[killerSteamId] then
+            PlayerStats[killerSteamId] = LoadPlayerStats(killerSteamId)
+        end
+        
+        if PlayerStats[killerSteamId] then
+            PlayerStats[killerSteamId].kills = PlayerStats[killerSteamId].kills + 1
             
-      
-            if PlayerStats[steamId].deaths == 0 then
-                PlayerStats[steamId].kda = PlayerStats[steamId].kills
+         
+            if PlayerStats[killerSteamId].deaths == 0 then
+                PlayerStats[killerSteamId].kda = PlayerStats[killerSteamId].kills
             else
-                PlayerStats[steamId].kda = math.floor((PlayerStats[steamId].kills / PlayerStats[steamId].deaths) * 100) / 100
+                PlayerStats[killerSteamId].kda = math.floor((PlayerStats[killerSteamId].kills / PlayerStats[killerSteamId].deaths) * 100) / 100
             end
             
-        
-            exports.oxmysql:execute('UPDATE asfallen_kda SET deaths = ?, kda = ? WHERE steamid = ?',
-                {PlayerStats[steamId].deaths, PlayerStats[steamId].kda, steamId})
-                
-        
-            TriggerClientEvent('asfallen_kda:updateStats', victim, PlayerStats[steamId])
-        end
-        
-      
-        if killer and killer ~= 0 and killer ~= victim then
-            local killerSteamId = GetSteamId(killer)
-            
-            if killerSteamId then
-                if not PlayerStats[killerSteamId] then
-                    PlayerStats[killerSteamId] = LoadPlayerStats(killerSteamId)
-                end
-                
-                if PlayerStats[killerSteamId] then
-                    PlayerStats[killerSteamId].kills = PlayerStats[killerSteamId].kills + 1
-                    
-                 
-                    if PlayerStats[killerSteamId].deaths == 0 then
-                        PlayerStats[killerSteamId].kda = PlayerStats[killerSteamId].kills
-                    else
-                        PlayerStats[killerSteamId].kda = math.floor((PlayerStats[killerSteamId].kills / PlayerStats[killerSteamId].deaths) * 100) / 100
-                    end
-                    
-               
-                    exports.oxmysql:execute('UPDATE asfallen_kda SET kills = ?, kda = ? WHERE steamid = ?',
-                        {PlayerStats[killerSteamId].kills, PlayerStats[killerSteamId].kda, killerSteamId})
+       
+            exports.oxmysql:execute('UPDATE asfallen_kda SET kills = ?, kda = ? WHERE steamid = ?',
+                {PlayerStats[killerSteamId].kills, PlayerStats[killerSteamId].kda, killerSteamId})
                         
-                
-                    TriggerClientEvent('asfallen_kda:updateStats', killer, PlayerStats[killerSteamId])
-                end
-            end
+            
+            TriggerClientEvent('asfallen_kda:updateStats', killer, PlayerStats[killerSteamId])
         end
     end
 end) 
