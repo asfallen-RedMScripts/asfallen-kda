@@ -1,0 +1,35 @@
+#kda-container {
+    position: absolute;
+    top: 150px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.35);
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.label {
+    font-weight: bold;
+    color: #cccccc;
+}
+
+.separator {
+    color: #666666;
+    margin: 0 2px;
+}
+
+#kills {
+    color: #00ff00;
+}
+
+#deaths {
+    color: #ff0000;
+}
+
+#kda {
+    color: #ffff00;
+} 
