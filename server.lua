@@ -118,7 +118,7 @@ AddEventHandler('asfallen_kda:playerDied', function(victim, killer)
     if killer and killer ~= 0 and killer ~= victim then
         local killerSteamId = GetSteamId(killer)
         if not killerSteamId then
-            print("Killer Steam ID bulunamadı - Killer: " .. tostring(killer)) -- Debug için
+            --print("Killer Steam ID bulunamadı - Killer: " .. tostring(killer)) -- Debug için
             return
         end
         
