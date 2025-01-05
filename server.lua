@@ -84,11 +84,11 @@ end)
 
 RegisterServerEvent('asfallen_kda:playerDied')
 AddEventHandler('asfallen_kda:playerDied', function(victim, killer)
-    print("Server received - Victim: " .. tostring(victim) .. " Killer: " .. tostring(killer)) -- Debug için
+   -- print("Server received - Victim: " .. tostring(victim) .. " Killer: " .. tostring(killer)) -- Debug için
     
     local steamId = GetSteamId(victim)
     if not steamId then
-        print("Steam ID bulunamadı - Victim: " .. tostring(victim)) -- Debug için
+      --  print("Steam ID bulunamadı - Victim: " .. tostring(victim)) -- Debug için
         return
     end
     
